@@ -6,6 +6,7 @@ import re
 import unicodedata
 from collections.abc import Iterable, Iterator, Mapping
 from typing import Any
+from urllib.parse import urljoin
 
 from coursera_notes.coursera.models import LectureMetadata, SubtitleSource, VideoSource
 from coursera_notes.models import Course, Lecture, Lesson, Module
@@ -20,6 +21,7 @@ _ITEM_COLLECTIONS = (
 )
 _RESOLUTION_RE = re.compile(r"(\d{3,4})\s*p", re.IGNORECASE)
 _LANGUAGE_RE = re.compile(r"^[a-z]{2,3}(?:[-_][a-z0-9]{2,8})*$", re.IGNORECASE)
+_COURSERA_BASE_URL = "https://www.coursera.org/"
 
 
 def _dicts(value: Any) -> Iterator[dict[str, Any]]:
@@ -309,7 +311,11 @@ def _resolution_number(value: Any) -> int | None:
 
 def _url_in(value: Any) -> str | None:
     if isinstance(value, str):
-        return value if value.startswith(("https://", "http://")) else None
+        if value.startswith(("https://", "http://")):
+            return value
+        if value.startswith("/") and not value.startswith("//"):
+            return urljoin(_COURSERA_BASE_URL, value)
+        return None
     if isinstance(value, Mapping):
         for key in ("mp4VideoUrl", "url", "src", "downloadUrl", "videoUrl"):
             found = value.get(key)
@@ -370,19 +376,20 @@ def _parse_subtitle_values(value: Any, format_hint: str) -> list[SubtitleSource]
                 file_format = suffix_match.group(1).lower() if suffix_match else format_hint
                 if language:
                     output.append(SubtitleSource(language=language, url=url, format=file_format))
-                return
+                    return
             for key, child in item.items():
                 next_language = key if _LANGUAGE_RE.fullmatch(str(key)) else language
                 visit(child, next_language)
             return
-        if (
-            isinstance(item, str)
-            and item.startswith(("https://", "http://"))
-            and inherited_language
-        ):
-            suffix_match = re.search(r"\.(txt|srt|vtt)(?:$|\?)", item, re.IGNORECASE)
+        if isinstance(item, str) and inherited_language:
+            url = _url_in(item)
+            if not url:
+                return
+            suffix_match = re.search(r"\.(txt|srt|vtt)(?:$|\?)", url, re.IGNORECASE)
             file_format = suffix_match.group(1).lower() if suffix_match else format_hint
-            output.append(SubtitleSource(language=inherited_language, url=item, format=file_format))
+            output.append(
+                SubtitleSource(language=inherited_language, url=url, format=file_format)
+            )
 
     visit(value)
     return output

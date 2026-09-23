@@ -21,6 +21,11 @@ _COURSE_MATERIALS_FIELDS = ",".join(
         "onDemandCourseMaterialItems.v2(name,slug,contentSummary,isLocked,timeCommitment,trackId)",
     )
 )
+_LECTURE_VIDEO_FIELDS = (
+    "onDemandVideos.v1(sources,subtitles,subtitlesTxt,subtitlesAssetTags,"
+    "dubbedSources,dubbedSubtitlesVtt,audioDescriptionVideoSources),"
+    "disableSkippingForward,startMs,endMs"
+)
 
 
 class CourseraAPIError(RuntimeError):
@@ -60,7 +65,14 @@ class CourseraClient:
         cookie = normalize_cauth(cauth)
         timeout = httpx.Timeout(connect=15, read=45, write=30, pool=15)
         self._client = httpx.Client(
-            headers={"Cookie": cookie, "User-Agent": "coursera-notes/0.1"},
+            headers={
+                "Cookie": cookie,
+                "User-Agent": "coursera-notes/0.1",
+                "Accept": "*/*",
+                "Accept-Language": "en",
+                "X-Coursera-Application": "ondemand",
+                "X-Requested-With": "XMLHttpRequest",
+            },
             timeout=timeout,
             follow_redirects=False,
             transport=transport,
@@ -88,7 +100,7 @@ class CourseraClient:
         resource_id = quote(f"{course_id}~{item_id}", safe="~")
         payload = self._get_json(
             f"/api/onDemandLectureVideos.v1/{resource_id}",
-            params={"includes": "video"},
+            params={"includes": "video", "fields": _LECTURE_VIDEO_FIELDS},
         )
         try:
             return parse_lecture_metadata(payload)

@@ -48,5 +48,9 @@ def test_course_and_lecture_metadata_use_expected_api_routes() -> None:
     assert "onDemandCourseMaterialItems.v2" in course_fields
     assert requests[0].url.params["showLockedItems"] == "true"
     assert requests[1].url.params["includes"] == "video"
+    lecture_fields = requests[1].url.params["fields"]
+    assert "onDemandVideos.v1(sources,subtitles,subtitlesTxt" in lecture_fields
+    assert requests[1].headers["x-coursera-application"] == "ondemand"
+    assert requests[1].headers["x-requested-with"] == "XMLHttpRequest"
     assert all(request.headers.get("cookie") == "CAUTH=private-token" for request in requests)
     assert "private-token" not in client_text

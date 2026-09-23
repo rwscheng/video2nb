@@ -1,0 +1,21 @@
+{
+  "elements": [
+    {
+      "id": "course-42~lecture-first",
+      "sources": {
+        "byResolution": {
+          "360p": {"mp4VideoUrl": "https://media.example/360.mp4?signature=redacted"},
+          "720p": {"mp4VideoUrl": "https://media.example/720.mp4?signature=redacted"},
+          "1080p": {"mp4VideoUrl": "https://media.example/1080.mp4?signature=redacted"}
+        }
+      },
+      "subtitles": [
+        {"languageCode": "en", "url": "https://media.example/en.vtt?signature=redacted", "format": "vtt"},
+        {"languageCode": "fr", "url": "https://media.example/fr.vtt?signature=redacted", "format": "vtt"}
+      ],
+      "subtitlesTxt": [
+        {"languageCode": "en", "url": "https://media.example/en.txt?signature=redacted"}
+      ]
+    }
+  ]
+}

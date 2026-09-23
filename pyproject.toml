@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "coursera-notes"
+version = "0.1.0"
+description = "Build NotebookLM-ready study packages from Coursera courses you can access."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Coursera Notes contributors" }]
+dependencies = [
+  "httpx>=0.27,<1",
+  "imagehash>=4.3,<5",
+  "Pillow>=10.3,<13",
+  "pydantic>=2.7,<3",
+  "scenedetect>=0.6.4,<0.7",
+  "opencv-python-headless>=4.8,<5",
+  "typer>=0.12,<1",
+]
+
+[project.scripts]
+coursera-notes = "coursera_notes.cli:app"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.10,<2",
+  "pytest>=8.2,<9",
+  "ruff>=0.5,<1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/coursera_notes"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: invokes external video tools"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B008"] # Typer uses Option/Argument objects as declarative defaults.
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+exclude = ["tests/"]
+
+[[tool.mypy.overrides]]
+module = ["scenedetect", "scenedetect.*"]
+ignore_missing_imports = true

@@ -1,0 +1,15 @@
+[coursera]
+resolution = "720p"
+language = "en"
+workers = 2
+
+[visuals]
+scene_threshold = 30.0
+hash_distance = 6
+cue_window_seconds = 1.5
+jpeg_quality = 88
+max_visuals_per_hour = 60
+minimum_scene_seconds = 1.5
+
+[output]
+root = "./output"

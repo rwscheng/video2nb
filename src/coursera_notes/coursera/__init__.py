@@ -1,0 +1,1 @@
+"""Coursera API adapter."""

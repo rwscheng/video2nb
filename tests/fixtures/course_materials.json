@@ -1,0 +1,25 @@
+{
+  "elements": [
+    {
+      "id": "course-42",
+      "name": "Machine Learning",
+      "slug": "machine-learning",
+      "moduleIds": ["module-intro", "module-models"]
+    }
+  ],
+  "linked": {
+    "onDemandCourseModules.v1": [
+      {"id": "module-intro", "name": "Introduction", "slug": "introduction", "lessonIds": ["lesson-welcome"]},
+      {"id": "module-models", "name": "Models", "slug": "models", "lessonIds": ["lesson-linear"]}
+    ],
+    "onDemandCourseLessons.v1": [
+      {"id": "lesson-welcome", "name": "Welcome", "slug": "welcome", "itemIds": ["lecture-first", "locked-lecture"]},
+      {"id": "lesson-linear", "name": "Linear Models", "slug": "linear-models", "itemIds": ["lecture-second"]}
+    ],
+    "onDemandCourseMaterialItems.v2": [
+      {"id": "lecture-first", "name": "Course Welcome", "slug": "course-welcome", "contentSummary": {"typeName": "lecture"}, "duration": 301, "isLocked": false},
+      {"id": "locked-lecture", "name": "Locked Preview", "slug": "locked-preview", "contentSummary": {"typeName": "lecture"}, "duration": 99, "isLocked": true},
+      {"id": "lecture-second", "name": "Linear Regression", "slug": "linear-regression", "contentSummary": {"typeName": "lecture"}, "duration": 720}
+    ]
+  }
+}

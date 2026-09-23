@@ -224,6 +224,7 @@ def parse_course_materials(payload: Mapping[str, Any], requested_slug: str | Non
                 lesson_record,
                 (
                     "itemIds",
+                    "elementIds",
                     "courseMaterialItemIds",
                     "courseMaterialIds",
                     "materialItemIds",

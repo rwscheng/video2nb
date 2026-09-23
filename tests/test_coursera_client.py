@@ -37,6 +37,16 @@ def test_course_and_lecture_metadata_use_expected_api_routes() -> None:
     assert len(requests) == 2
     assert requests[0].url.params["q"] == "slug"
     assert requests[0].url.params["slug"] == "machine-learning"
+    assert set(requests[0].url.params["includes"].split(",")) == {
+        "modules",
+        "lessons",
+        "items",
+    }
+    course_fields = requests[0].url.params["fields"]
+    assert "moduleIds" in course_fields
+    assert "onDemandCourseMaterialLessons.v1" in course_fields
+    assert "onDemandCourseMaterialItems.v2" in course_fields
+    assert requests[0].url.params["showLockedItems"] == "true"
     assert requests[1].url.params["includes"] == "video"
     assert all(request.headers.get("cookie") == "CAUTH=private-token" for request in requests)
     assert "private-token" not in client_text

@@ -59,6 +59,38 @@ def test_course_parser_handles_inline_material_without_optional_fields() -> None
     assert course.lectures[0].duration_seconds is None
 
 
+def test_course_parser_handles_linked_response_with_element_ids() -> None:
+    course = parse_course_materials(
+        {
+            "elements": [{"id": "course-42", "moduleIds": ["module-1"]}],
+            "linked": {
+                "onDemandCourseMaterialModules.v1": [
+                    {"id": "module-1", "name": "Ethics", "lessonIds": ["lesson-1"]}
+                ],
+                "onDemandCourseMaterialLessons.v1": [
+                    {
+                        "id": "lesson-1",
+                        "name": "Responsible AI",
+                        "elementIds": ["lecture-1"],
+                    }
+                ],
+                "onDemandCourseMaterialItems.v2": [
+                    {
+                        "id": "lecture-1",
+                        "name": "Introduction",
+                        "contentSummary": {"typeName": "lecture"},
+                    }
+                ],
+            },
+        },
+        requested_slug="ethics-and-ai",
+    )
+
+    assert course.id == "course-42"
+    assert course.modules[0].name == "Ethics"
+    assert course.lectures[0].lecture_id == "lecture-1"
+
+
 def test_empty_modules_and_lessons_remain_after_locked_lectures_are_skipped() -> None:
     course = parse_course_materials(
         {

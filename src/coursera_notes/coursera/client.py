@@ -12,6 +12,16 @@ from coursera_notes.coursera.models import LectureMetadata
 from coursera_notes.coursera.parser import parse_course_materials, parse_lecture_metadata
 from coursera_notes.models import Course
 
+_COURSE_MATERIALS_INCLUDES = "modules,lessons,items"
+_COURSE_MATERIALS_FIELDS = ",".join(
+    (
+        "moduleIds",
+        "onDemandCourseMaterialModules.v1(name,slug,lessonIds)",
+        "onDemandCourseMaterialLessons.v1(name,slug,itemIds,elementIds)",
+        "onDemandCourseMaterialItems.v2(name,slug,contentSummary,isLocked,timeCommitment,trackId)",
+    )
+)
+
 
 class CourseraAPIError(RuntimeError):
     """A sanitized Coursera API failure with no cookie or response body attached."""
@@ -61,7 +71,13 @@ class CourseraClient:
             raise ValueError("Course slug cannot be empty")
         payload = self._get_json(
             "/api/onDemandCourseMaterials.v2/",
-            params={"q": "slug", "slug": slug},
+            params={
+                "q": "slug",
+                "slug": slug,
+                "includes": _COURSE_MATERIALS_INCLUDES,
+                "fields": _COURSE_MATERIALS_FIELDS,
+                "showLockedItems": "true",
+            },
         )
         try:
             return parse_course_materials(payload, requested_slug=slug)
